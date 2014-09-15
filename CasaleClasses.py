@@ -1,0 +1,96 @@
+import SQLClasses
+import collections
+
+class emailDatabase(SQLClasses.database):
+    
+    emailTableName = 'mailing'
+    emailColumnName = 'addr'
+    emailTotalCountTable = 'totalcount'
+    emailTotalCountColumn1 = 'day'
+    emailTotalCountColumn2 = 'daycount'
+    
+    def __init__(self, user, password, host, email_db_name):
+        SQLClasses.database.__init__(self, user, password, host, email_db_name)
+
+    def getDomainNames(self):
+        entries = self.showColumnsInString(self.emailColumnName, self.emailTableName)
+        domainNames = []
+        
+        for k in range(len(entries)):
+            domainNames.append(entries[k].partition('@')[2])
+        
+        return domainNames
+
+    def resetMailingTableInDatabase(self):
+        try:
+            query_statement = 'TRUNCATE ' + self.emailTableName
+            self.cursor.execute(query_statement)
+        except:
+            query_statement = ('CREATE TABLE ' + self.emailTableName
+                               + '(' + self.emailColumnName +
+                               ' VARCHAR(255) NOT NULL)' )
+            self.cursor.execute(query_statement)
+
+    def resetDailyCountInDatabase(self):
+        try:
+            query_statement = 'TRUNCATE ' + self.emailTotalCountTable
+            self.cursor.execute(query_statement)
+        except:
+            query_statement = ('CREATE TABLE ' + self.emailTotalCountTable
+                               + '(' + self.emailTotalCountColumn1 + ' INT,' +
+                               self.emailTotalCountColumn2 +  ' INT)' )
+            print query_statement
+            self.cursor.execute(query_statement)
+
+    def howManyDaysCounted(self):
+        statement = 'count(' + self.emailTotalCountColumn1 + ')'
+        return int(self.showColumnsInString(statement,self.emailTotalCountTable)[0])
+
+    def howManyEmailsCounted(self):
+        statement = 'sum(' + self.emailTotalCountColumn2 + ')'
+        return int(self.showColumnsInString(statement,self.emailTotalCountTable)[0])
+    
+    def howManyEmailsRecorded(self):
+        statement = 'count(' + self.emailColumnName + ')'
+        return int(self.showColumnsInString(statement,self.emailTableName)[0])
+
+    def totalEmailsAddedTheLastNDays(self, N):
+        if self.howManyEmailsRecorded() == self.howManyEmailsCounted():
+            statement = ('SELECT sum(' + self.emailTotalCountColumn2 + ') FROM ' +
+                         self.emailTotalCountTable + ' WHERE ' +
+                         self.emailTotalCountColumn1 + ' >= ' +
+                         str(self.howManyDaysCounted() - N + 1))
+            self.cursor.execute(statement)
+            # print statement
+            return int(self.cursor.fetchall()[0][0])
+        else:
+            print 'Please update your count'
+
+    def getDomainCountTotal(self):
+        return dict(collections.Counter(self.getDomainNames()))
+
+    def getDomainCountFromLastNDays(self, N):
+        if self.howManyEmailsRecorded() == self.howManyEmailsCounted():
+            startingIndex = self.howManyEmailsCounted() - self.totalEmailsAddedTheLastNDays(N)
+            return dict(collections.Counter( (self.getDomainNames())[startingIndex:] ))
+        else:
+            print 'Please update your daily count'
+
+    def getPercentageGrowthTheLastNDays(self, N):
+        # keep in mind these two are dictionaries
+        totalCounts = self.getDomainCountTotal()
+        lastNDaysCounts = self.getDomainCountFromLastNDays(N)
+        growthLastNDays = {}
+        for k in lastNDaysCounts.keys():
+            if k in totalCounts:
+                growthLastNDays[k] = float(lastNDaysCounts[k])/totalCounts[k]
+            else:
+                growthLastNDays[k] = 1.0
+        
+        return growthLastNDays
+        
+    def getEmailTableName(self):
+        return self.emailTableName
+
+    def getEmailColumnName(self):
+        return self.emailColumnName
