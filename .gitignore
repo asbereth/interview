@@ -1,0 +1,136 @@
+# git-ls-files --others --exclude-from=.git/info/exclude
+# Lines that start with '#' are comments.
+
+# C++ source directories
+*.[oa]
+*~
+.*.swp
+*.il
+*.depend*
+*.mod
+*.gch
+\#*#
+.#*
+
+# example directories
+#*~
+*.soln
+*.tree
+*.log
+*.gplt
+*_residual.dat
+*.plt
+tecplot.phy
+*.e*
+*.o*
+.gm_mpi
+*.core
+*.dat
+*.lay
+*.txt
+
+# latex document directories
+#*~
+*.ps
+*.pdf
+*.aux
+#*.log
+*.dvi
+*.toc
+*.idx
+*.tex
+*.sty
+*.ilg
+*.ind
+*.ttf
+
+# html document directories
+*.html
+*.png
+*.gif
+*.css
+formula.repository
+images.tex
+images.log
+images.aux
+images.pl
+labels.pl
+
+# misc
+tags
+.DS_Store
+*.xcodeproj
+
+# pcmfpi files
+*.csv
+*.pyc
+*.xml
+*.fpilam
+a.out
+
+# pcmfpi executables
+CH4_flamespeed
+integrator
+
+# 1D executables
+solvers1D
+euler1D
+levermore1D
+bgk1D
+
+# 2D executables
+cffc2D
+icemcfd2tecplot
+icemcfd2grid2dquad
+advectdiffuse2D
+chem2D
+dusty2D
+electrostatic2D
+euler2D
+hightemp2D
+ion5moment2D
+lespremixed2D
+lespcmfpi2D
+levelset2D
+navierstokes2D
+embeddedboundaries2D
+gaussian2D
+rte2D
+flame2D
+flame2Dp
+turbulentflame2D
+mhd2D
+
+# 3D executables
+cffc3D
+euler3Dpolytropic
+euler3Dthermallyperfect
+navierstokes3Dpolytropic
+navierstokes3Dthermallyperfect
+fans3Dpolytropic
+fans3Dthermallyperfect
+les3Dpolytropic
+les3Dpolytropic_k_eq
+les3Dfsd
+les3Dtf
+les3Dpcmfpi
+fans3Dpcmfpi
+gaussian3D
+idealMHD3Dpolytropic
+resistiveMHD3Dpolytropic
+rteMHD3Dpolytropic
+filters
+
+# gmsh executable
+/bin/gmsh
+
+# unit testing directories
+journal.tut
+log.tut
+
+#dependencies
+src_2D/Depend
+src_3D/Depend
+
+# hidden files created by nfs (if an open file is deleted or overwritten)
+.nfs*
