@@ -1,14 +1,15 @@
 To run the code, make sure the following are satisfied:
 1. MySQL Connector/Python, MySQL and Python are already installed in the system
-2. the four source files, CasaleClasses.py, SQLClasses.pyc, MiscFunctions.py, 
+2. The four source files, CasaleClasses.py, SQLClasses.pyc, MiscFunctions.py, 
 MainDriver.py, and an input file, input.txt, are located within the same folder
 3. The file, input.txt, has already been appropriately set up with the proper 
 username, password, hostname and database_name. 
-4. Type: 
+
+To execute the script, at shell, type: 
 
    python MainDriver.py
 
-to execute the script, which will produce three output files: 
+This which will produce three output files: 
    1. output_count_30_days_top_50.txt
    2. output_count_total_top_50.txt
    3. output_growth_30_days_top_50.txt

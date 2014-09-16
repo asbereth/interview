@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import CasaleClasses
 import random, string
 
