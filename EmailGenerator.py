@@ -54,7 +54,7 @@ MiscFunctions.addEmailWithoutUpdatingCount(emailDB)
 emailDB.cnx.commit()
 
 # total domain counts
-f = open('output_total_counts.txt','w')
+f = open('output_count_total_top_50.txt','w')
 
 domainNameCount = emailDB.getDomainCountTotal()
 sortedDomainCount = sorted(domainNameCount.items(),
@@ -77,7 +77,7 @@ f.close()
 
 # domain counts for the past 30 days
 
-f = open('output_growth_30_days.txt','w')
+f = open('output_count_30_days_top_50.txt','w')
 
 domainNameCountLast30Days = emailDB.getDomainCountFromLastNDays(30)
 sortedDomainNameCountLast30Days = sorted(domainNameCountLast30Days.items(),
@@ -105,7 +105,7 @@ f.close()
 dataFromLast30Days = emailDB.getPercentageGrowthTheLastNDays(30)
 
 top_50 = dataFromLast30Days[:50]
-f = open('output_top_50.txt','w')
+f = open('output_growth_30_days_top_50.txt','w')
     
 for k in range(len(top_50)):
     if k == 0:
