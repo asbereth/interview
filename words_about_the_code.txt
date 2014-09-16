@@ -62,9 +62,32 @@ compared with the total number. Only top 50 domains are reported. If there are
 domains which are added within the last 30 days, then these will have the 
 growth of 100 percent. 
 
+
+==================================================================================
+				MAIN STRATEGIES
+==================================================================================
+
 There are several design practices here that can be considered. The instructions 
 mention that the other table should keep track of the daily counts by the domain 
-names. I found, however, that taking advantage of the natural ordering of SQL 
-(that is, in the order records are entered) was sufficient to accomplish what we 
-wanted, and only daily count of the email addresses entered on a particular day 
-needs to be tracked. 
+names. 
+
+I found, however, that taking advantage of the natural ordering of SQL (that is, 
+in the order records are entered) was sufficient to accomplish what we wanted, 
+and only daily count of the email addresses entered on a particular day needed to 
+be tracked. Besides, to track daily count of each domain name can potentially 
+require storing a huge amount of data onto the database, since potentially, there 
+could be hundreds of days, and tens of thousands of domain names. 
+
+By storing daily count, I have reduced the complexity of the database to only 
+contain as many rows as there are days that are recorded. Even in the case where 
+we have to store 100 years worth of email addresses, there won't be more 
+than 50,000 records in the database. 
+
+Also, I made the assumptions that daily count will only be updated once every 24 
+hour (since the instructions mention this), so un-counted email addresses must 
+have been added today. 
+
+Finally, domain counts are accomplished by using the collection.Counter of Python 
+rather than SQL queries. It is possible to do so using queries, but the 
+instructions are explicit in that all processes need to be done in Python/Perl, 
+rather than complex/sub-queries. 
