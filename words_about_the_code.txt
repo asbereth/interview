@@ -1,0 +1,70 @@
+To run this script, it is assumed that MySQL Connector/Python is already 
+installed. For instructions on how to install it on, please refer to the 
+following link 
+
+http://tinyurl.com/nssgbwg
+
+This program consists of four source codes (CasaleClasses.py, MainDriver.py, 
+MiscFunctions.py and SQLClasses.py), and an input file ('input.txt'). 
+
+The input file, input.txt has the configuration parameters for database. The first 
+line contains 'user', second line 'password', third line 'hostname', and the 
+fourth one 'database_name'. We assume that a database called 'casale_test' ALREADY 
+EXISTS before we can proceed. The file 'input.txt' will have to be modified 
+accordingly. For empty password, just leave the second line blank, and the code 
+will automatically assume that password has not been set and not required. 
+
+To run the program, simply make sure that the configuration has been appropriately 
+set up in 'input.txt', a MySQL database called 'casale_test' exists, and as above, 
+the MySQL Connector/Python has already been installed, then type: 
+
+python MainDriver.py
+
+on shell. MainDriver.py is the file where the entry point to the program is 
+located. It will produce the three output files, which will be mentioned briefly 
+later. 
+
+SQLClasses.py is a file contains the class 'database', and it handles the 
+interaction between Python and MySQL. I wrote this class as I was practicing 
+MySQL and Python during the week Elektra gave me to prepare for this test. 
+
+The class 'emailDatabase' (of CasaleClasses.py) inherits from 'database' (of 
+SQLClasses), and in emailDatabase, I added functions which only work given the 
+structure of the database as given by the test problem (a table called 'mailing' 
+with one column, 'addr', and also another table, 'totalcount', with two columns, 
+'day', and 'daycount'). 
+
+As instructed, the structure of the table 'mailing' has not been modified. It 
+only contains one column, which is 'addr'. 
+
+Another table is constructed to hold the daily count of the added email 
+addresses. The table, 'totalcount', consists of two columns, 'day', which holds 
+the index that denotes the numbering for each day, and 'daycount', which contains 
+the number of email addresses that have been added for that particular day. 
+
+We assume that the daily count is updated ONCE every 24 hour, so during most of 
+the day, there will be discrepancy between the recorded number of email 
+addresses, and the actual number of email addresses. The statistics and any 
+analysis will be based on the current number of email addresses, with all the 
+addresses included up to the current moment being included, and 30 days will be 
+counted based on today (today + 29 previous days). 
+
+The output consists of three files:
+1. output_count_30_days_top_50.txt
+This file contains the counts of the domain within the last 30 days. Only the 
+top 50 is reported. 
+2. output_count_total_top_50.txt
+This file contains the counts of the domain from the beginning of the 
+simulation, or day 1. Only the top 50 is reported. 
+3. output_growth_30_days_top_50.txt
+This contains the percentage growth of the domain names within the last 30 days, 
+compared with the total number. Only top 50 domains are reported. If there are 
+domains which are added within the last 30 days, then these will have the 
+growth of 100 percent. 
+
+There are several design practices here that can be considered. The instructions 
+mention that the other table should keep track of the daily counts by the domain 
+names. I found, however, that taking advantage of the natural ordering of SQL 
+(that is, in the order records are entered) was sufficient to accomplish what we 
+wanted, and only daily count of the email addresses entered on a particular day 
+needs to be tracked. 
