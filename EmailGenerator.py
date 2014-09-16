@@ -4,12 +4,23 @@ import random, string
 import MiscFunctions
 import os
 
+os.system('reset')
+
 # seeding random generator
 random.seed()
 
-# here, we assume that there exists a database called 'casale_test' in the server
-# 
-emailDB = CasaleClasses.emailDatabase('asusanto','','localhost','casale_test')
+# opening input file for database, we assume that there exists
+# a database called 'casale_test'
+f = open('input.txt')
+
+config = []
+
+for k in f:
+    config.append(k.strip())
+
+# only take the first four elements, to ensure there are no trailing spaces
+config = config[0:4]
+emailDB = CasaleClasses.emailDatabase(*config)
 
 # as per instruction, 'mailing' is set to be initially empty
 # so if the table already exists, we will wipe it off here,
@@ -35,11 +46,73 @@ MiscFunctions.addEmailAddresses(emailDB, numberOfSimulationDays)
 ## print 'Committing now'
 emailDB.cnx.commit()
 
+# total domain counts
+f = open('output_total_counts.txt','w')
 
+domainNameCount = emailDB.getDomainCountTotal()
+sortedDomainCount =sorted(domainNameCount.items(), key=lambda growth: growth[1], reverse=True)
+
+for k in range(50):
+    if k == 0:
+        f.write(repr('rank').rjust(5))
+        f.write(repr('domain').rjust(20))
+        f.write(repr('count').rjust(20))
+        f.write('\n')
+    
+    f.write(repr(k+1).rjust(5))
+    f.write(repr(sortedDomainCount[k][0]).rjust(20))
+    f.write(repr(sortedDomainCount[k][1]).rjust(20))
+    f.write('\n')
+
+f.close()
+
+# domain counts for the past 30 days
+
+f = open('output_total_counts_30_days.txt','w')
+
+domainNameCountLast30Days = emailDB.getDomainCountFromLastNDays(30)
+sortedDomainNameCountLast30Days = sorted(domainNameCountLast30Days.items(), key=lambda growth: growth[1], reverse=True)
+
+for k in range(50):
+    if k == 0:
+        f.write(repr('rank').rjust(5))
+        f.write(repr('domain').rjust(20))
+        f.write(repr('count').rjust(20))
+        f.write('\n')
+    
+    f.write(repr(k+1).rjust(5))
+    f.write(repr(sortedDomainNameCountLast30Days[k][0]).rjust(20))
+    f.write(repr(sortedDomainNameCountLast30Days[k][1]).rjust(20))
+    f.write('\n')
+
+f.close()
+
+
+
+
+# this part will only work if there are enough data to show statistics for the last 30 days
 dataFromLast30Days = emailDB.getPercentageGrowthTheLastNDays(30)
 
 top_50 = dataFromLast30Days[:50]
-
-for k in range(len(top_50)):
-    print('%d : %s %.4f' % (k+1,top_50[k][0],100*top_50[k][1]))
+f = open('output_top_50.txt','w')
     
+for k in range(len(top_50)):
+    if k == 0:
+        f.write(repr('rank').rjust(5))
+        f.write(repr('domain').rjust(20))
+        f.write(repr('growth_percentage').rjust(20))
+        f.write('\n')
+        # print repr('rank').rjust(5),
+        # print repr('domain').rjust(20),
+        # print repr('growth_percentage').rjust(20)
+
+    f.write(repr(k+1).rjust(5))
+    f.write(repr(top_50[k][0]).rjust(20))
+    f.write(repr('%.4f' % (100*top_50[k][1]) ).rjust(20))
+    f.write('\n')
+    # print repr(k+1).rjust(5),
+    # print repr(top_50[k][0]).rjust(20),
+    # print repr('%.4f' % (100*top_50[k][1]) ).rjust(20)
+    ## print('%d : %s %.4f' % (k+1,top_50[k][0],100*top_50[k][1]))
+
+f.close()
