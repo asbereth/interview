@@ -39,7 +39,7 @@ class emailDatabase(SQLClasses.database):
             query_statement = ('CREATE TABLE ' + self.emailTotalCountTable
                                + '(' + self.emailTotalCountColumn1 + ' INT,' +
                                self.emailTotalCountColumn2 +  ' INT)' )
-            print query_statement
+            ## print query_statement
             self.cursor.execute(query_statement)
 
     def howManyDaysCounted(self):
@@ -55,27 +55,63 @@ class emailDatabase(SQLClasses.database):
         return int(self.showColumnsInString(statement,self.emailTableName)[0])
 
     def totalEmailsAddedTheLastNDays(self, N):
-        if self.howManyEmailsRecorded() == self.howManyEmailsCounted():
+        if self.isCountUpdated():
             statement = ('SELECT sum(' + self.emailTotalCountColumn2 + ') FROM ' +
                          self.emailTotalCountTable + ' WHERE ' +
                          self.emailTotalCountColumn1 + ' >= ' +
                          str(self.howManyDaysCounted() - N + 1))
             self.cursor.execute(statement)
-            # print statement
             return int(self.cursor.fetchall()[0][0])
         else:
-            print 'Please update your count'
+            print 'WARNING: This operation will only include partial results from today!!\n' \
+                  'Update is done only once every 24 hours!!!!'
+            if N > 1:
+                statement = ('SELECT sum(' + self.emailTotalCountColumn2 + ') FROM ' +
+                             self.emailTotalCountTable + ' WHERE ' +
+                             self.emailTotalCountColumn1 + ' >= ' +
+                             str(self.howManyDaysCounted() - N + 2))
+            elif N == 1:
+                return (self.howManyEmailsRecorded() -
+                        self.howManyEmailsCounted())
+            # print statement
+            self.cursor.execute(statement)
+            return int(self.cursor.fetchall()[0][0] +
+                       self.howManyEmailsRecorded() -
+                       self.howManyEmailsCounted())
+        # print statement
+
 
     def getDomainCountTotal(self):
         return dict(collections.Counter(self.getDomainNames()))
 
-    def getDomainCountFromLastNDays(self, N):
-        if self.howManyEmailsRecorded() == self.howManyEmailsCounted():
-            startingIndex = self.howManyEmailsCounted() - self.totalEmailsAddedTheLastNDays(N)
-            return dict(collections.Counter( (self.getDomainNames())[startingIndex:] ))
-        else:
-            print 'Please update your daily count'
+    def isCountUpdated(self):
+        return self.howManyEmailsRecorded() == self.howManyEmailsCounted()
 
+    ## the routine updateDailyCount() is performed only ONCE a day
+    ## This part will not be simulated in this project, but in real life,
+    ## this routine will performed only once per day
+    def updateDailyCount(self):
+        if self.isCountUpdated():
+            print 'Count already up to date'
+        else:
+            numberOfDaysAlreadyRecorded = self.howManyDaysCounted()
+            numberOfEmailsAddedToday = self.howManyEmailsRecorded() - self.howManyEmailsCounted()
+            query_statement = ('INSERT INTO ' + self.emailTotalCountTable  +
+                               '( ' + self.emailTotalCountColumn1 +', ' + self.emailTotalCountColumn2 + ')'
+                               ' VALUES (' + str(numberOfDaysAlreadyRecorded+1) + ', ' +
+                               str(numberOfEmailsAddedToday) + ')')
+            self.cursor.execute(query_statement)
+            self.cnx.commit()
+
+    
+    def getDomainCountFromLastNDays(self, N):
+        if self.howManyEmailsRecorded() != self.howManyEmailsCounted():
+            print 'WARNING: This operation will only include partial results from today!!\n' \
+                  'Update is done only once every 24 hours!!!!'
+        
+        startingIndex = self.howManyEmailsCounted() - self.totalEmailsAddedTheLastNDays(N)
+        return dict(collections.Counter( (self.getDomainNames())[startingIndex:] ))
+        
     def getPercentageGrowthTheLastNDays(self, N):
         # keep in mind these two are dictionaries
         totalCounts = self.getDomainCountTotal()
@@ -86,8 +122,10 @@ class emailDatabase(SQLClasses.database):
                 growthLastNDays[k] = float(lastNDaysCounts[k])/totalCounts[k]
             else:
                 growthLastNDays[k] = 1.0
+
+        return sorted(growthLastNDays.items(), key=lambda growth: growth[1], reverse=True)
         
-        return growthLastNDays
+        ## return growthLastNDays
         
     def getEmailTableName(self):
         return self.emailTableName
