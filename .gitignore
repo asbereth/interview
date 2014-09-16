@@ -27,7 +27,6 @@ tecplot.phy
 *.core
 *.dat
 *.lay
-*.txt
 
 # latex document directories
 #*~
