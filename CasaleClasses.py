@@ -109,7 +109,7 @@ class emailDatabase(SQLClasses.database):
         #     print 'WARNING: This operation will only include partial results from today!!\n' \
         #           'Update is done only once every 24 hours!!!!'
         
-        startingIndex = self.howManyEmailsCounted() - self.totalEmailsAddedTheLastNDays(N)
+        startingIndex = self.howManyEmailsRecorded() - self.totalEmailsAddedTheLastNDays(N)
         return dict(collections.Counter( (self.getDomainNames())[startingIndex:] ))
         
     def getPercentageGrowthTheLastNDays(self, N):
