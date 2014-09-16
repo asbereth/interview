@@ -63,8 +63,8 @@ class emailDatabase(SQLClasses.database):
             self.cursor.execute(statement)
             return int(self.cursor.fetchall()[0][0])
         else:
-            print 'WARNING: This operation will only include partial results from today!!\n' \
-                  'Update is done only once every 24 hours!!!!'
+            # print 'WARNING: This operation will only include partial results from today!!\n' \
+            #       'Update is done only once every 24 hours!!!!'
             if N > 1:
                 statement = ('SELECT sum(' + self.emailTotalCountColumn2 + ') FROM ' +
                              self.emailTotalCountTable + ' WHERE ' +
@@ -105,9 +105,9 @@ class emailDatabase(SQLClasses.database):
 
     
     def getDomainCountFromLastNDays(self, N):
-        if self.howManyEmailsRecorded() != self.howManyEmailsCounted():
-            print 'WARNING: This operation will only include partial results from today!!\n' \
-                  'Update is done only once every 24 hours!!!!'
+        # if self.howManyEmailsRecorded() != self.howManyEmailsCounted():
+        #     print 'WARNING: This operation will only include partial results from today!!\n' \
+        #           'Update is done only once every 24 hours!!!!'
         
         startingIndex = self.howManyEmailsCounted() - self.totalEmailsAddedTheLastNDays(N)
         return dict(collections.Counter( (self.getDomainNames())[startingIndex:] ))

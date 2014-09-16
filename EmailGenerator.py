@@ -43,6 +43,13 @@ emailDB.resetDailyCountInDatabase()
 numberOfSimulationDays = 100
 MiscFunctions.addEmailAddresses(emailDB, numberOfSimulationDays)
 
+# this part represents the email addresses that have not been included
+# in the daily count. These addresses represent addresses that have been
+# added today (on a 24-hour cycle). Daily count is updated every 24 hour.
+# The statistics that will be generated will be up to the point the last
+# email address is added. 
+MiscFunctions.addEmailWithoutUpdatingCount(emailDB)
+
 ## print 'Committing now'
 emailDB.cnx.commit()
 
@@ -50,7 +57,9 @@ emailDB.cnx.commit()
 f = open('output_total_counts.txt','w')
 
 domainNameCount = emailDB.getDomainCountTotal()
-sortedDomainCount =sorted(domainNameCount.items(), key=lambda growth: growth[1], reverse=True)
+sortedDomainCount = sorted(domainNameCount.items(),
+                           key=lambda growth: growth[1],
+                           reverse=True)
 
 for k in range(50):
     if k == 0:
@@ -68,10 +77,12 @@ f.close()
 
 # domain counts for the past 30 days
 
-f = open('output_total_counts_30_days.txt','w')
+f = open('output_growth_30_days.txt','w')
 
 domainNameCountLast30Days = emailDB.getDomainCountFromLastNDays(30)
-sortedDomainNameCountLast30Days = sorted(domainNameCountLast30Days.items(), key=lambda growth: growth[1], reverse=True)
+sortedDomainNameCountLast30Days = sorted(domainNameCountLast30Days.items(),
+                                         key=lambda growth: growth[1],
+                                         reverse=True)
 
 for k in range(50):
     if k == 0:
